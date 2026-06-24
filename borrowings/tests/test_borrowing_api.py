@@ -87,3 +87,69 @@ class AuthenticatedBorrowingTests(APITestCase):
         res = self.client.get(BORROWINGS_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertGreaterEqual(len(res.data), 1)
+
+
+class BorrowingCreateTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="user@test.com",
+            password="testpass123",
+        )
+        self.client.force_authenticate(user=self.user)
+
+    def test_create_borrowing_success(self):
+        book = sample_book(inventory=3)
+        payload = {
+            "book": book.id,
+            "expected_return_date": (
+                datetime.date.today() + datetime.timedelta(days=7)
+            ),
+        }
+
+        res = self.client.post(BORROWINGS_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        borrowing = Borrowing.objects.get(id=res.data["id"])
+        self.assertEqual(borrowing.user, self.user)
+        self.assertEqual(borrowing.book, book)
+
+        book.refresh_from_db()
+        self.assertEqual(book.inventory, 2)
+
+    def test_create_borrowing_with_zero_inventory(self):
+        book = sample_book(inventory=0)
+        payload = {
+            "book": book.id,
+            "expected_return_date": (
+                datetime.date.today() + datetime.timedelta(days=7)
+            ),
+        }
+
+        res = self.client.post(BORROWINGS_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_borrowing_with_today_expected_return_date(self):
+        book = sample_book(inventory=3)
+        payload = {
+            "book": book.id,
+            "expected_return_date": datetime.date.today(),
+        }
+
+        res = self.client.post(BORROWINGS_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_borrowing_unauthorized(self):
+        self.client.force_authenticate(user=None)
+        book = sample_book(inventory=3)
+        payload = {
+            "book": book.id,
+            "expected_return_date": (
+                datetime.date.today() + datetime.timedelta(days=7)
+            ),
+        }
+
+        res = self.client.post(BORROWINGS_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
