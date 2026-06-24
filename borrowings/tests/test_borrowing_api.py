@@ -41,6 +41,10 @@ def sample_borrowing(user, **params):
     return Borrowing.objects.create(**defaults)
 
 
+def borrowing_return_url(borrowing_id):
+    return reverse("borrowings-return-borrowing", args=[borrowing_id])
+
+
 class UnauthenticatedBorrowingTests(APITestCase):
     def test_list_requires_auth(self):
         res = self.client.get(BORROWINGS_URL)
@@ -256,3 +260,58 @@ class BorrowingFilteringTests(APITestCase):
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data[0]["id"], returned_borrowing.id)
 
+
+class BorrowingReturnTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="user@test.com",
+            password="testpass123",
+        )
+        self.other_user = User.objects.create_user(
+            email="other@test.com",
+            password="testpass123",
+        )
+        self.client.force_authenticate(user=self.user)
+
+    def test_return_borrowing_success(self):
+        book = sample_book(inventory=0)
+        borrowing = sample_borrowing(
+            user=self.user,
+            book=book,
+            actual_return_date=None,
+        )
+
+        res = self.client.post(borrowing_return_url(borrowing.id))
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        borrowing.refresh_from_db()
+        self.assertIsNotNone(borrowing.actual_return_date)
+
+        book.refresh_from_db()
+        self.assertEqual(book.inventory, 1)
+
+    def test_return_borrowing_twice_not_allowed(self):
+        borrowing = sample_borrowing(
+            user=self.user,
+            actual_return_date=datetime.date.today(),
+        )
+
+        res = self.client.post(borrowing_return_url(borrowing.id))
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_unauthorized_user_cannot_return_borrowing(self):
+        borrowing = sample_borrowing(user=self.user)
+        self.client.force_authenticate(user=None)
+
+        res = self.client.post(borrowing_return_url(borrowing.id))
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_user_cannot_return_other_user_borrowing(self):
+        borrowing = sample_borrowing(user=self.other_user)
+
+        res = self.client.post(borrowing_return_url(borrowing.id))
+
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
