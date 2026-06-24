@@ -1,6 +1,9 @@
+from datetime import date
+
 from rest_framework import mixins, viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 from borrowings.models import Borrowing
 from borrowings.serializers import (
@@ -57,3 +60,23 @@ class BorrowingViewSet(
             status=status.HTTP_201_CREATED,
             headers=headers,
         )
+
+    @action(methods=["post"], detail=True, url_path="return")
+    def return_borrowing(self, request, pk=None):
+        borrowing = self.get_object()
+
+        if borrowing.actual_return_date is not None:
+            return Response(
+                {"detail": "Borrowing is already returned."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        borrowing.actual_return_date = date.today()
+        borrowing.save()
+
+        book = borrowing.book
+        book.inventory += 1
+        book.save()
+
+        serializer = self.get_serializer(borrowing)
+        return Response(serializer.data, status=status.HTTP_200_OK)
