@@ -153,3 +153,106 @@ class BorrowingCreateTests(APITestCase):
         res = self.client.post(BORROWINGS_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class BorrowingFilteringTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="user@test.com",
+            password="testpass123",
+        )
+        self.admin = User.objects.create_user(
+            email="admin@test.com",
+            password="adminpass123",
+            is_staff=True,
+        )
+        self.other_user = User.objects.create_user(
+            email="other@test.com",
+            password="testpass123",
+        )
+
+    def test_regular_user_sees_only_own_borrowings(self):
+        self.client.force_authenticate(user=self.user)
+        own_borrowing = sample_borrowing(user=self.user)
+        sample_borrowing(user=self.other_user)
+
+        res = self.client.get(BORROWINGS_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+        self.assertEqual(res.data[0]["id"], own_borrowing.id)
+
+    def test_regular_user_cannot_access_other_user_detail(self):
+        self.client.force_authenticate(user=self.user)
+        other_borrowing = sample_borrowing(user=self.other_user)
+
+        res = self.client.get(borrowing_detail_url(other_borrowing.id))
+
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_admin_sees_all_borrowings(self):
+        self.client.force_authenticate(user=self.admin)
+        sample_borrowing(user=self.user)
+        sample_borrowing(user=self.other_user)
+
+        res = self.client.get(BORROWINGS_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 2)
+
+    def test_admin_can_filter_by_user_id(self):
+        self.client.force_authenticate(user=self.admin)
+        user_borrowing = sample_borrowing(user=self.user)
+        sample_borrowing(user=self.other_user)
+
+        res = self.client.get(BORROWINGS_URL, {"user_id": self.user.id})
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+        self.assertEqual(res.data[0]["id"], user_borrowing.id)
+
+    def test_regular_user_cannot_use_user_id_to_see_others(self):
+        self.client.force_authenticate(user=self.user)
+        own_borrowing = sample_borrowing(user=self.user)
+        sample_borrowing(user=self.other_user)
+
+        res = self.client.get(BORROWINGS_URL, {"user_id": self.other_user.id})
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+        self.assertEqual(res.data[0]["id"], own_borrowing.id)
+
+    def test_filter_is_active_true(self):
+        self.client.force_authenticate(user=self.admin)
+        active_borrowing = sample_borrowing(
+            user=self.user,
+            actual_return_date=None,
+        )
+        sample_borrowing(
+            user=self.user,
+            actual_return_date=datetime.date.today(),
+        )
+
+        res = self.client.get(BORROWINGS_URL, {"is_active": "true"})
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+        self.assertEqual(res.data[0]["id"], active_borrowing.id)
+
+    def test_filter_is_active_false(self):
+        self.client.force_authenticate(user=self.admin)
+        sample_borrowing(
+            user=self.user,
+            actual_return_date=None,
+        )
+        returned_borrowing = sample_borrowing(
+            user=self.user,
+            actual_return_date=datetime.date.today(),
+        )
+
+        res = self.client.get(BORROWINGS_URL, {"is_active": "false"})
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+        self.assertEqual(res.data[0]["id"], returned_borrowing.id)
+
