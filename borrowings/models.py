@@ -22,9 +22,7 @@ class Borrowing(models.Model):
     class Meta:
         constraints = [
             models.CheckConstraint(
-                condition=models.Q(
-                    expected_return_date__gt=models.F("borrow_date")
-                ),
+                condition=models.Q(expected_return_date__gt=models.F("borrow_date")),
                 name="expected_return_date_after_borrow_date",
             ),
             models.CheckConstraint(
