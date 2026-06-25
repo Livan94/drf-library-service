@@ -6,10 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from borrowings.models import Borrowing
-from borrowings.serializers import (
-    BorrowingReadSerializer,
-    BorrowingCreateSerializer
-)
+from borrowings.serializers import BorrowingReadSerializer, BorrowingCreateSerializer
 
 
 class BorrowingViewSet(

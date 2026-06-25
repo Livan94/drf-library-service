@@ -32,8 +32,7 @@ def sample_book(**params):
 def sample_borrowing(user, **params):
     book = params.pop("book", sample_book())
     defaults = {
-        "expected_return_date": datetime.date.today()
-        + datetime.timedelta(days=7),
+        "expected_return_date": datetime.date.today() + datetime.timedelta(days=7),
         "book": book,
         "user": user,
     }
