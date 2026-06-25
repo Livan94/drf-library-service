@@ -22,11 +22,13 @@ from books.serializers import BookSerializer
     ),
     update=extend_schema(
         summary="Update book",
-        description="Update all fields of an existing book. Available only for admin users.",
+        description="Update all fields of an existing book. "
+        "Available only for admin users.",
     ),
     partial_update=extend_schema(
         summary="Partially update book",
-        description="Update selected fields of an existing book. Available only for admin users.",
+        description="Update selected fields of an existing book. "
+        "Available only for admin users.",
     ),
     destroy=extend_schema(
         summary="Delete book",

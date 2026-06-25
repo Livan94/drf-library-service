@@ -16,7 +16,8 @@ class RegisterView(generics.CreateAPIView):
     @extend_schema(
         tags=["Users"],
         summary="Register user",
-        description="Register a new user account and create a profile for library service access.",
+        description="Register a new user account and create "
+        "a profile for library service access.",
         request=UserRegisterSerializer,
         responses={201: UserRegisterSerializer},
     )
@@ -53,7 +54,8 @@ class MeView(generics.RetrieveUpdateAPIView):
     @extend_schema(
         tags=["Users"],
         summary="Partially update my profile",
-        description="Partially update selected profile fields of the currently authenticated user.",
+        description="Partially update selected profile fields "
+        "of the currently authenticated user.",
         request=UserMeSerializer,
         responses={200: UserMeSerializer},
     )
@@ -65,7 +67,8 @@ class UserTokenObtainPairView(TokenObtainPairView):
     @extend_schema(
         tags=["Users"],
         summary="Obtain JWT token pair",
-        description="Authenticate user by email and password and obtain access and refresh tokens.",
+        description="Authenticate user by email and password "
+        "and obtain access and refresh tokens.",
         request=TokenObtainPairSerializer,
         responses={200: TokenObtainPairSerializer},
     )

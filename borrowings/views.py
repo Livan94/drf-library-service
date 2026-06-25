@@ -30,24 +30,28 @@ from borrowings.serializers import BorrowingReadSerializer, BorrowingCreateSeria
                 type=OpenApiTypes.BOOL,
                 location=OpenApiParameter.QUERY,
                 required=False,
-                description="Filter borrowings by active status: true for active, false for returned.",
+                description="Filter borrowings by active status: "
+                "true for active, false for returned.",
             ),
             OpenApiParameter(
                 name="user_id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.QUERY,
                 required=False,
-                description="Filter borrowings by user ID. Available only for admin users.",
+                description="Filter borrowings by user ID. "
+                "Available only for admin users.",
             ),
         ],
     ),
     retrieve=extend_schema(
         summary="Retrieve borrowing",
-        description="Retrieve detailed information about a specific borrowing by its ID.",
+        description="Retrieve detailed information about "
+        "a specific borrowing by its ID.",
     ),
     create=extend_schema(
         summary="Create borrowing",
-        description="Create a new borrowing for the authenticated user if the selected book is available.",
+        description="Create a new borrowing for the authenticated user "
+        "if the selected book is available.",
         request=BorrowingCreateSerializer,
         responses={201: BorrowingReadSerializer},
     ),
@@ -103,7 +107,8 @@ class BorrowingViewSet(
 
     @extend_schema(
         summary="Return borrowing",
-        description="Mark a borrowing as returned and increase the related book inventory by 1.",
+        description="Mark a borrowing as returned and increase "
+        "the related book inventory by 1.",
         responses={
             200: BorrowingReadSerializer,
             400: OpenApiResponse(description="Borrowing is already returned."),

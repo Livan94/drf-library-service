@@ -4,7 +4,7 @@ from users.views import (
     MeView,
     RegisterView,
     UserTokenObtainPairView,
-    UserTokenRefreshView
+    UserTokenRefreshView,
 )
 
 urlpatterns = [
