@@ -53,7 +53,7 @@ cd drf-library-service
 Create a `.env` file from the sample:
 
 ```bash
-cp .env-sample .env
+cp .env.sample .env
 ```
 Make sure the file contains the required variables, including:
 
