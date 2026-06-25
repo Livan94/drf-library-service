@@ -65,7 +65,7 @@ class BorrowingViewSet(
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = Borrowing.objects.select_related("book", "user")
+        queryset = Borrowing.objects.select_related("book", "user").order_by("id")
 
         user = self.request.user
         is_active = self.request.query_params.get("is_active")
