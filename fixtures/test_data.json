@@ -1,0 +1,248 @@
+[
+  {
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$demo$7WdY1m4Z8K3PpJrWm2o2HfV2mJm3WkP8H8mK7mV2jQxQ6w8gM4s9uA",
+      "last_login": null,
+      "is_superuser": true,
+      "first_name": "Admin",
+      "last_name": "Library",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2026-06-20T09:00:00Z",
+      "email": "admin@library.local",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$demo$7WdY1m4Z8K3PpJrWm2o2HfV2mJm3WkP8H8mK7mV2jQxQ6w8gM4s9uA",
+      "last_login": null,
+      "is_superuser": false,
+      "first_name": "Oleh",
+      "last_name": "Reader",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-06-20T10:00:00Z",
+      "email": "oleh.reader@library.local",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$demo$7WdY1m4Z8K3PpJrWm2o2HfV2mJm3WkP8H8mK7mV2jQxQ6w8gM4s9uA",
+      "last_login": null,
+      "is_superuser": false,
+      "first_name": "Anna",
+      "last_name": "Stone",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-06-21T08:30:00Z",
+      "email": "anna.stone@library.local",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$demo$7WdY1m4Z8K3PpJrWm2o2HfV2mJm3WkP8H8mK7mV2jQxQ6w8gM4s9uA",
+      "last_login": null,
+      "is_superuser": false,
+      "first_name": "Mark",
+      "last_name": "Taylor",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-06-21T11:45:00Z",
+      "email": "mark.taylor@library.local",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+
+  {
+    "model": "books.book",
+    "pk": 1,
+    "fields": {
+      "title": "Clean Code",
+      "author": "Robert C. Martin",
+      "cover": "HARD",
+      "inventory": 4,
+      "daily_fee": "2.50"
+    }
+  },
+  {
+    "model": "books.book",
+    "pk": 2,
+    "fields": {
+      "title": "The Pragmatic Programmer",
+      "author": "Andrew Hunt",
+      "cover": "SOFT",
+      "inventory": 2,
+      "daily_fee": "3.00"
+    }
+  },
+  {
+    "model": "books.book",
+    "pk": 3,
+    "fields": {
+      "title": "Refactoring",
+      "author": "Martin Fowler",
+      "cover": "HARD",
+      "inventory": 5,
+      "daily_fee": "3.40"
+    }
+  },
+  {
+    "model": "books.book",
+    "pk": 4,
+    "fields": {
+      "title": "Design Patterns",
+      "author": "Erich Gamma",
+      "cover": "HARD",
+      "inventory": 3,
+      "daily_fee": "4.20"
+    }
+  },
+  {
+    "model": "books.book",
+    "pk": 5,
+    "fields": {
+      "title": "Domain-Driven Design",
+      "author": "Eric Evans",
+      "cover": "SOFT",
+      "inventory": 6,
+      "daily_fee": "4.80"
+    }
+  },
+  {
+    "model": "books.book",
+    "pk": 6,
+    "fields": {
+      "title": "Working Effectively with Legacy Code",
+      "author": "Michael Feathers",
+      "cover": "SOFT",
+      "inventory": 2,
+      "daily_fee": "3.70"
+    }
+  },
+  {
+    "model": "books.book",
+    "pk": 7,
+    "fields": {
+      "title": "Head First Design Patterns",
+      "author": "Eric Freeman",
+      "cover": "SOFT",
+      "inventory": 7,
+      "daily_fee": "2.90"
+    }
+  },
+  {
+    "model": "books.book",
+    "pk": 8,
+    "fields": {
+      "title": "Test-Driven Development",
+      "author": "Kent Beck",
+      "cover": "HARD",
+      "inventory": 3,
+      "daily_fee": "3.10"
+    }
+  },
+
+  {
+    "model": "borrowings.borrowing",
+    "pk": 1,
+    "fields": {
+      "borrow_date": "2026-06-10",
+      "expected_return_date": "2026-06-20",
+      "actual_return_date": null,
+      "book": 1,
+      "user": 2
+    }
+  },
+  {
+    "model": "borrowings.borrowing",
+    "pk": 2,
+    "fields": {
+      "borrow_date": "2026-06-05",
+      "expected_return_date": "2026-06-12",
+      "actual_return_date": "2026-06-11",
+      "book": 2,
+      "user": 2
+    }
+  },
+  {
+    "model": "borrowings.borrowing",
+    "pk": 3,
+    "fields": {
+      "borrow_date": "2026-06-14",
+      "expected_return_date": "2026-06-25",
+      "actual_return_date": null,
+      "book": 3,
+      "user": 3
+    }
+  },
+  {
+    "model": "borrowings.borrowing",
+    "pk": 4,
+    "fields": {
+      "borrow_date": "2026-06-01",
+      "expected_return_date": "2026-06-08",
+      "actual_return_date": "2026-06-07",
+      "book": 4,
+      "user": 3
+    }
+  },
+  {
+    "model": "borrowings.borrowing",
+    "pk": 5,
+    "fields": {
+      "borrow_date": "2026-06-18",
+      "expected_return_date": "2026-06-28",
+      "actual_return_date": null,
+      "book": 5,
+      "user": 4
+    }
+  },
+  {
+    "model": "borrowings.borrowing",
+    "pk": 6,
+    "fields": {
+      "borrow_date": "2026-06-03",
+      "expected_return_date": "2026-06-10",
+      "actual_return_date": "2026-06-09",
+      "book": 6,
+      "user": 4
+    }
+  },
+  {
+    "model": "borrowings.borrowing",
+    "pk": 7,
+    "fields": {
+      "borrow_date": "2026-06-22",
+      "expected_return_date": "2026-07-02",
+      "actual_return_date": null,
+      "book": 7,
+      "user": 2
+    }
+  },
+  {
+    "model": "borrowings.borrowing",
+    "pk": 8,
+    "fields": {
+      "borrow_date": "2026-06-15",
+      "expected_return_date": "2026-06-22",
+      "actual_return_date": null,
+      "book": 8,
+      "user": 3
+    }
+  }
+]
