@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "drf_spectacular",
+    "django_filters",
     "debug_toolbar",
     "users",
     "books",
@@ -173,3 +175,30 @@ INTERNAL_IPS = [
 if DEBUG:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS += [ip.rsplit(".", 1)[0] + ".1" for ip in ips]
+
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Library Service API",
+    "DESCRIPTION": "API for managing books, users and borrowings in library service.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SECURITY": [{"BearerAuth": []}],
+    "COMPONENTS": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+            }
+        }
+    },
+    "SWAGGER_UI_SETTINGS": {
+        "persistAuthorization": True,
+        "filter": True,
+        "displayRequestDuration": True,
+        "tryItOutEnabled": True,
+    },
+}
+
