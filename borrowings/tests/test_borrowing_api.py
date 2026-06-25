@@ -61,14 +61,18 @@ class AuthenticatedBorrowingTests(APITestCase):
     def test_list_borrowings(self):
         sample_borrowing(user=self.user)
         sample_borrowing(user=self.user)
+
         res = self.client.get(BORROWINGS_URL)
+
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 2)
+        self.assertEqual(len(res.data["results"]), 2)
 
     def test_retrieve_borrowing(self):
         borrowing = sample_borrowing(user=self.user)
         url = borrowing_detail_url(borrowing.id)
+
         res = self.client.get(url)
+
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data["id"], borrowing.id)
 
@@ -76,7 +80,9 @@ class AuthenticatedBorrowingTests(APITestCase):
         book = sample_book(title="Kobzar")
         borrowing = sample_borrowing(user=self.user, book=book)
         url = borrowing_detail_url(borrowing.id)
+
         res = self.client.get(url)
+
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data["book"]["title"], "Kobzar")
 
@@ -87,9 +93,11 @@ class AuthenticatedBorrowingTests(APITestCase):
         )
         sample_borrowing(user=self.user)
         sample_borrowing(user=other_user)
+
         res = self.client.get(BORROWINGS_URL)
+
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(res.data), 1)
+        self.assertGreaterEqual(len(res.data["results"]), 1)
 
 
 class BorrowingCreateTests(APITestCase):
@@ -182,8 +190,8 @@ class BorrowingFilteringTests(APITestCase):
         res = self.client.get(BORROWINGS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]["id"], own_borrowing.id)
+        self.assertEqual(len(res.data["results"]), 1)
+        self.assertEqual(res.data["results"][0]["id"], own_borrowing.id)
 
     def test_regular_user_cannot_access_other_user_detail(self):
         self.client.force_authenticate(user=self.user)
@@ -201,7 +209,7 @@ class BorrowingFilteringTests(APITestCase):
         res = self.client.get(BORROWINGS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 2)
+        self.assertEqual(len(res.data["results"]), 2)
 
     def test_admin_can_filter_by_user_id(self):
         self.client.force_authenticate(user=self.admin)
@@ -211,8 +219,8 @@ class BorrowingFilteringTests(APITestCase):
         res = self.client.get(BORROWINGS_URL, {"user_id": self.user.id})
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]["id"], user_borrowing.id)
+        self.assertEqual(len(res.data["results"]), 1)
+        self.assertEqual(res.data["results"][0]["id"], user_borrowing.id)
 
     def test_regular_user_cannot_use_user_id_to_see_others(self):
         self.client.force_authenticate(user=self.user)
@@ -222,8 +230,8 @@ class BorrowingFilteringTests(APITestCase):
         res = self.client.get(BORROWINGS_URL, {"user_id": self.other_user.id})
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]["id"], own_borrowing.id)
+        self.assertEqual(len(res.data["results"]), 1)
+        self.assertEqual(res.data["results"][0]["id"], own_borrowing.id)
 
     def test_filter_is_active_true(self):
         self.client.force_authenticate(user=self.admin)
@@ -239,8 +247,8 @@ class BorrowingFilteringTests(APITestCase):
         res = self.client.get(BORROWINGS_URL, {"is_active": "true"})
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]["id"], active_borrowing.id)
+        self.assertEqual(len(res.data["results"]), 1)
+        self.assertEqual(res.data["results"][0]["id"], active_borrowing.id)
 
     def test_filter_is_active_false(self):
         self.client.force_authenticate(user=self.admin)
@@ -256,8 +264,8 @@ class BorrowingFilteringTests(APITestCase):
         res = self.client.get(BORROWINGS_URL, {"is_active": "false"})
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]["id"], returned_borrowing.id)
+        self.assertEqual(len(res.data["results"]), 1)
+        self.assertEqual(res.data["results"][0]["id"], returned_borrowing.id)
 
 
 class BorrowingReturnTests(APITestCase):

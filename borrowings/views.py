@@ -1,5 +1,12 @@
 from datetime import date
 
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import mixins, viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -9,6 +16,46 @@ from borrowings.models import Borrowing
 from borrowings.serializers import BorrowingReadSerializer, BorrowingCreateSerializer
 
 
+@extend_schema(tags=["Borrowings"])
+@extend_schema_view(
+    list=extend_schema(
+        summary="List borrowings",
+        description=(
+            "Retrieve borrowings for the authenticated user. "
+            "Admin users can view all borrowings and filter them by user ID."
+        ),
+        parameters=[
+            OpenApiParameter(
+                name="is_active",
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="Filter borrowings by active status: "
+                "true for active, false for returned.",
+            ),
+            OpenApiParameter(
+                name="user_id",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="Filter borrowings by user ID. "
+                "Available only for admin users.",
+            ),
+        ],
+    ),
+    retrieve=extend_schema(
+        summary="Retrieve borrowing",
+        description="Retrieve detailed information about "
+        "a specific borrowing by its ID.",
+    ),
+    create=extend_schema(
+        summary="Create borrowing",
+        description="Create a new borrowing for the authenticated user "
+        "if the selected book is available.",
+        request=BorrowingCreateSerializer,
+        responses={201: BorrowingReadSerializer},
+    ),
+)
 class BorrowingViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -18,7 +65,7 @@ class BorrowingViewSet(
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = Borrowing.objects.select_related("book", "user")
+        queryset = Borrowing.objects.select_related("book", "user").order_by("id")
 
         user = self.request.user
         is_active = self.request.query_params.get("is_active")
@@ -58,6 +105,15 @@ class BorrowingViewSet(
             headers=headers,
         )
 
+    @extend_schema(
+        summary="Return borrowing",
+        description="Mark a borrowing as returned and increase "
+        "the related book inventory by 1.",
+        responses={
+            200: BorrowingReadSerializer,
+            400: OpenApiResponse(description="Borrowing is already returned."),
+        },
+    )
     @action(methods=["post"], detail=True, url_path="return")
     def return_borrowing(self, request, pk=None):
         borrowing = self.get_object()
